@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Progress Tracker (31 Ranks)</title>
+    <!-- Load Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        .container-padding {
+            padding: 1rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        /* Style for the completion status */
+        .completed {
+            color: #10b981; /* Tailwind emerald-500 */
+            font-weight: 600;
+        }
+        .pending {
+            color: #ef4444; /* Tailwind red-500 */
+            font-weight: 600;
+        }
+        /* Custom style to make the checkbox look a bit nicer */
+        input[type="checkbox"]:checked {
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            border-color: #3b82f6;
+        }
+        /* Responsive Table Styling for Small Screens */
+        @media (max-width: 640px) {
+            .responsive-table th, .responsive-table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.875rem; /* text-sm */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container-padding pt-10">
+        <!-- Header -->
+        <header class="text-center mb-10 bg-white p-6 rounded-xl shadow-lg border-t-4 border-blue-500">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">Student Course Completion Status</h1>
+            <p class="text-gray-600">Tracking progress for 31 students. Total Completed: <span id="completed-count" class="font-bold text-blue-600">0</span></p>
+        </header>
+
+        <!-- Student Table -->
+        <div class="bg-white rounded-xl shadow-xl overflow-x-auto">
+            <table id="student-table" class="min-w-full divide-y divide-gray-200 responsive-table">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Rank</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/12">Student Name</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-3/12">Course No.</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Status</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Completed</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // --- Data Setup ---
+        const students = [
+            { name: "VISHAL GAURAV", course: "CS-401", completed: false },
+            { name: "Pradeep Kumar", course: "MATH-305", completed: false },
+            { name: "Mohammad Kaif", course: "ENG-210", completed: false },
+            { name: "Kumari Sonali", course: "BUS-101", completed: false },
+            { name: "Aryan soni", course: "PHY-401", completed: false },
+            { name: "shailesh kumar gupta", course: "ART-150", completed: false },
+            { name: "Ranjeet Kumar", course: "CS-401", completed: false },
+            { name: "Pratap Sahu", course: "MATH-305", completed: false },
+            { name: "Raja Kumar", course: "CHEM-202", completed: false },
+            { name: "Richa", course: "HIS-101", completed: false },
+            { name: "Dipika Gautam", course: "PHY-401", completed: false },
+            { name: "Harish Choudhary", course: "BUS-101", completed: false },
+            { name: "Nishant Malik", course: "ENG-210", completed: false },
+            { name: "Mayank Bhashkar", course: "ART-150", completed: false },
+            { name: "Tisha Jeswani", course: "CS-401", completed: false },
+            { name: "Supriya Gajula", course: "MATH-305", completed: false },
+            { name: "Sujal Thakur", course: "CHEM-202", completed: false },
+            { name: "Sneha Raj", course: "HIS-101", completed: false },
+            { name: "Saradhi Molika", course: "PHY-401", completed: false },
+            { name: "Krishn Kundan Bhardwaj", course: "BUS-101", completed: false },
+            { name: "AYUSH WANKHADE", course: "ENG-210", completed: false },
+            { name: "Manvendra Bhardwaj", course: "ART-150", completed: false },
+            { name: "Kundan Kumar", course: "CS-401", completed: false },
+            { name: "Amit singh", course: "MATH-305", completed: false },
+            { name: "Vijay Chandra", course: "CHEM-202", completed: false },
+            { name: "Suruchi Ku.", course: "HIS-101", completed: false },
+            { name: "Shivam Ansh Bhardwaj", course: "PHY-401", completed: false },
+            { name: "Narottam Sharan", course: "BUS-101", completed: false },
+            { name: "Roushan kumar", course: "ENG-210", completed: false },
+            { name: "Megha pandey", course: "ART-150", completed: false },
+            { name: "Manjeet Kumar", course: "CS-401", completed: false },
+            { name: "Megha pandey", course: "ART-150", completed: false },
+            { name: "Manjeet Kumar", course: "CS-401", completed: false }
+        ];
+
+        const tableBody = document.querySelector('#student-table tbody');
+        const completedCountEl = document.getElementById('completed-count');
+
+        // Function to update the count display
+        function updateCompletedCount() {
+            const completedStudents = students.filter(s => s.completed).length;
+            completedCountEl.textContent = completedStudents;
+        }
+
+        // Function to render the student table
+        function renderTable() {
+            tableBody.innerHTML = ''; // Clear existing rows
+            students.forEach((student, index) => {
+                const row = tableBody.insertRow();
+                // Add alternating row background color
+                row.className = index % 2 === 0 ? 'bg-white hover:bg-gray-50 transition' : 'bg-gray-50 hover:bg-gray-100 transition';
+
+                // 1. Rank
+                row.insertCell().textContent = student.rank;
+
+                // 2. Student Name
+                row.insertCell().textContent = student.name;
+
+                // 3. Course No.
+                row.insertCell().textContent = student.course;
+
+                // 4. Status Text
+                const statusCell = row.insertCell();
+                statusCell.className = 'text-center font-semibold';
+                const statusSpan = document.createElement('span');
+                statusSpan.id = `status-${student.rank}`;
+                statusSpan.textContent = student.completed ? 'Completed' : 'Pending';
+                statusSpan.className = student.completed ? 'completed' : 'pending';
+                statusCell.appendChild(statusSpan);
+
+                // 5. Completed Checkbox
+                const checkboxCell = row.insertCell();
+                checkboxCell.className = 'text-center';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = student.completed;
+                checkbox.className = 'form-checkbox h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 transition duration-150 ease-in-out cursor-pointer';
+
+                // Add event listener to the checkbox
+                checkbox.addEventListener('change', (e) => {
+                    student.completed = e.target.checked; // Update internal state
+                    updateStatusDisplay(student.rank, student.completed);
+                    updateCompletedCount();
+                });
+
+                checkboxCell.appendChild(checkbox);
+            });
+            updateCompletedCount(); // Initial count update
+        }
+
+        // Function to update the status text next to the checkbox
+        function updateStatusDisplay(rank, isCompleted) {
+            const statusSpan = document.getElementById(`status-${rank}`);
+            if (statusSpan) {
+                statusSpan.textContent = isCompleted ? 'Completed' : 'Pending';
+                statusSpan.className = isCompleted ? 'completed' : 'pending';
+            }
+        }
+
+        // Initialize the table when the window loads
+        window.onload = renderTable;
+    </script>
+</body>
+</html>
