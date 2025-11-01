@@ -27,11 +27,6 @@
             color: #ef4444; /* Tailwind red-500 */
             font-weight: 600;
         }
-        /* Custom style to make the checkbox look a bit nicer */
-        input[type="checkbox"]:checked {
-            background-color: #3b82f6; /* Tailwind blue-500 */
-            border-color: #3b82f6;
-        }
         /* Responsive Table Styling for Small Screens */
         @media (max-width: 640px) {
             .responsive-table th, .responsive-table td {
@@ -44,10 +39,10 @@
 <body class="bg-gray-50 text-gray-800">
 
     <div class="container-padding pt-10">
-        <!-- Header -->
+        <!-- Header: Simplified since tracking is no longer interactive -->
         <header class="text-center mb-10 bg-white p-6 rounded-xl shadow-lg border-t-4 border-blue-500">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">Student Course Completion Status</h1>
-            <p class="text-gray-600">Tracking progress for 31 students. Total Completed: <span id="completed-count" class="font-bold text-blue-600">0</span></p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">Student Course Roster</h1>
+            <p class="text-gray-600">Listing 31 students and their assigned courses.</p>
         </header>
 
         <!-- Student Table -->
@@ -55,11 +50,10 @@
             <table id="student-table" class="min-w-full divide-y divide-gray-200 responsive-table">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">Rank</th>
-                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/12">Student Name</th>
-                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-3/12">Course No.</th>
-                        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Status</th>
-                        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">Completed</th>
+                        <!-- Adjusted widths for the remaining three columns -->
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-5/12">Student Name</th>
+                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/12">Course No.</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-3/12">Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -71,8 +65,10 @@
 
     <script>
         // --- Data Setup ---
+        // I've kept 'rank' and 'completed' in the data structure for future use,
+        // but they are no longer displayed or interactive on the page.
         const students = [
-            { name: "VISHAL GAURAV", course: "CS-401", completed: false },
+             { name: "VISHAL GAURAV", course: "CS-401", completed: false },
             { name: "Pradeep Kumar", course: "MATH-305", completed: false },
             { name: "Mohammad Kaif", course: "ENG-210", completed: false },
             { name: "Kumari Sonali", course: "BUS-101", completed: false },
@@ -103,18 +99,11 @@
             { name: "Roushan kumar", course: "ENG-210", completed: false },
             { name: "Megha pandey", course: "ART-150", completed: false },
             { name: "Manjeet Kumar", course: "CS-401", completed: false },
-            { name: "Megha pandey", course: "ART-150", completed: false },
-            { name: "Manjeet Kumar", course: "CS-401", completed: false }
+            { name: "Kunal Burnwal", course: "ART-150", completed: false },
+            { name: "Himanshi Verma", course: "CS-401", completed: false }
         ];
 
         const tableBody = document.querySelector('#student-table tbody');
-        const completedCountEl = document.getElementById('completed-count');
-
-        // Function to update the count display
-        function updateCompletedCount() {
-            const completedStudents = students.filter(s => s.completed).length;
-            completedCountEl.textContent = completedStudents;
-        }
 
         // Function to render the student table
         function renderTable() {
@@ -124,51 +113,20 @@
                 // Add alternating row background color
                 row.className = index % 2 === 0 ? 'bg-white hover:bg-gray-50 transition' : 'bg-gray-50 hover:bg-gray-100 transition';
 
-                // 1. Rank
-                row.insertCell().textContent = student.rank;
-
-                // 2. Student Name
+                // 1. Student Name
                 row.insertCell().textContent = student.name;
 
-                // 3. Course No.
+                // 2. Course No.
                 row.insertCell().textContent = student.course;
 
-                // 4. Status Text
+                // 3. Status Text
                 const statusCell = row.insertCell();
                 statusCell.className = 'text-center font-semibold';
                 const statusSpan = document.createElement('span');
-                statusSpan.id = `status-${student.rank}`;
                 statusSpan.textContent = student.completed ? 'Completed' : 'Pending';
                 statusSpan.className = student.completed ? 'completed' : 'pending';
                 statusCell.appendChild(statusSpan);
-
-                // 5. Completed Checkbox
-                const checkboxCell = row.insertCell();
-                checkboxCell.className = 'text-center';
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = student.completed;
-                checkbox.className = 'form-checkbox h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 transition duration-150 ease-in-out cursor-pointer';
-
-                // Add event listener to the checkbox
-                checkbox.addEventListener('change', (e) => {
-                    student.completed = e.target.checked; // Update internal state
-                    updateStatusDisplay(student.rank, student.completed);
-                    updateCompletedCount();
-                });
-
-                checkboxCell.appendChild(checkbox);
             });
-            updateCompletedCount(); // Initial count update
-        }
-
-        // Function to update the status text next to the checkbox
-        function updateStatusDisplay(rank, isCompleted) {
-            const statusSpan = document.getElementById(`status-${rank}`);
-            if (statusSpan) {
-                statusSpan.textContent = isCompleted ? 'Completed' : 'Pending';
-                statusSpan.className = isCompleted ? 'completed' : 'pending';
-            }
         }
 
         // Initialize the table when the window loads
